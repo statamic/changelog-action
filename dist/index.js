@@ -475,7 +475,7 @@ exports.main = async function main() {
       throw new Error(`No changelog found for version ${targetVersion}`)
     }
 
-    core.setOutput('version', version.id)
+    core.setOutput('version', version.version)
     core.setOutput('date', version.date)
     core.setOutput('text', version.text)
   }
