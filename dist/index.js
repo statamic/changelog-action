@@ -448,13 +448,20 @@ const core = __nccwpck_require__(186)
 const { parseEntry } = __nccwpck_require__(280)
 const { getEntries } = __nccwpck_require__(964)
 const { getChangelogForVersion } = __nccwpck_require__(557)
+const { normalizeVersion } = __nccwpck_require__(606)
 
 const readFile = utils.promisify(fs.readFile)
 
 exports.main = async function main() {
   try {
     const changelogPath = './CHANGELOG.md'
-    const targetVersion = core.getInput('version')
+
+    core.startGroup('Getting version')
+    let targetVersion = core.getInput('version')
+    core.debug(`targetVersion: ${targetVersion}`)
+    targetVersion = normalizeVersion(targetVersion);
+    core.debug(`targetVersion: ${targetVersion}`)
+    core.endGroup()
 
     core.startGroup('Parse data')
     const rawData = await readFile(changelogPath)
@@ -475,6 +482,18 @@ exports.main = async function main() {
   catch (error) {
     core.setFailed(error.message)
   }
+}
+
+
+/***/ }),
+
+/***/ 606:
+/***/ ((__unused_webpack_module, exports) => {
+
+exports.normalizeVersion = version => {
+  return version
+    .replace(/^refs\/tags\//, '')
+    .replace(/^v/, '')
 }
 
 
