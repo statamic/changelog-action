@@ -444,40 +444,26 @@ exports.getEntries = rawData => {
 const utils = __nccwpck_require__(669)
 const fs = __nccwpck_require__(747)
 const core = __nccwpck_require__(186)
-
+const readFile = utils.promisify(fs.readFile)
 const { parseEntry } = __nccwpck_require__(280)
 const { getEntries } = __nccwpck_require__(964)
 const { getChangelogForVersion } = __nccwpck_require__(557)
 const { normalizeVersion } = __nccwpck_require__(606)
 
-const readFile = utils.promisify(fs.readFile)
-
 exports.main = async function main() {
   try {
-    const changelogPath = './CHANGELOG.md'
-
-    core.startGroup('Getting version')
-    let targetVersion = core.getInput('version')
-    core.debug(`targetVersion: ${targetVersion}`)
-    targetVersion = normalizeVersion(targetVersion);
-    core.debug(`targetVersion: ${targetVersion}`)
-    core.endGroup()
-
-    core.startGroup('Parse data')
-    const rawData = await readFile(changelogPath)
-    const versions = getEntries(rawData).map(parseEntry)
-    core.debug(`${versions.length} version logs found`)
-    core.endGroup()
-
-    const version = getChangelogForVersion(versions, targetVersion)
+    const version = normalizeVersion(core.getInput('version'))
+    const rawData = await readFile('./CHANGELOG.md')
+    const changelogs = getEntries(rawData).map(parseEntry)
+    const changelog = getChangelogForVersion(changelogs, version)
 
     if (version == null) {
-      throw new Error(`No changelog found for version ${targetVersion}`)
+      throw new Error(`No changelog found for version ${version}`)
     }
 
-    core.setOutput('version', version.version)
-    core.setOutput('date', version.date)
-    core.setOutput('text', version.text)
+    core.setOutput('version', changelog.version)
+    core.setOutput('date', changelog.date)
+    core.setOutput('text', changelog.text)
   }
   catch (error) {
     core.setFailed(error.message)
