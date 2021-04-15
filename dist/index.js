@@ -5,27 +5,9 @@ require('./sourcemap-register.js');module.exports =
 /***/ 932:
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const core = __nccwpck_require__(186);
-const wait = __nccwpck_require__(258);
+const { main } = __nccwpck_require__(713)
 
-
-// most @actions toolkit packages have async methods
-async function run() {
-  try {
-    const ms = core.getInput('milliseconds');
-    core.info(`Waiting ${ms} milliseconds ...`);
-
-    core.debug((new Date()).toTimeString()); // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
-    await wait(parseInt(ms));
-    core.info((new Date()).toTimeString());
-
-    core.setOutput('time', new Date().toTimeString());
-  } catch (error) {
-    core.setFailed(error.message);
-  }
-}
-
-run();
+main()
 
 
 /***/ }),
@@ -423,19 +405,98 @@ exports.toCommandValue = toCommandValue;
 
 /***/ }),
 
-/***/ 258:
-/***/ ((module) => {
+/***/ 557:
+/***/ ((__unused_webpack_module, exports) => {
 
-let wait = function (milliseconds) {
-  return new Promise((resolve) => {
-    if (typeof milliseconds !== 'number') {
-      throw new Error('milliseconds not a number');
+exports.getChangelogForVersion = (changelogs, version) => {
+  return changelogs.find(changelog => changelog.version === version)
+}
+
+
+/***/ }),
+
+/***/ 964:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+const core = __nccwpck_require__(186)
+
+const versionSeparator = '\n## '
+const semverLinkRegex = /^v?(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?/
+
+const avoidNonVersionData = version => semverLinkRegex.test(version)
+
+exports.getEntries = rawData => {
+    const content = String(rawData)
+
+    core.debug(`CHANGELOG content: ${content}`)
+
+    return content
+      .split(versionSeparator)
+      .filter(avoidNonVersionData)
+}
+
+
+/***/ }),
+
+/***/ 713:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+const utils = __nccwpck_require__(669)
+const fs = __nccwpck_require__(747)
+const core = __nccwpck_require__(186)
+
+const { parseEntry } = __nccwpck_require__(280)
+const { getEntries } = __nccwpck_require__(964)
+const { getChangelogForVersion } = __nccwpck_require__(557)
+
+const readFile = utils.promisify(fs.readFile)
+
+exports.main = async function main() {
+  try {
+    const changelogPath = './CHANGELOG.md'
+    const targetVersion = core.getInput('version')
+
+    core.startGroup('Parse data')
+    const rawData = await readFile(changelogPath)
+    const versions = getEntries(rawData).map(parseEntry)
+    core.debug(`${versions.length} version logs found`)
+    core.endGroup()
+
+    const version = getChangelogForVersion(versions, targetVersion)
+
+    if (version == null) {
+      throw new Error(`No changelog found for version ${targetVersion}`)
     }
-    setTimeout(() => resolve("done!"), milliseconds)
-  });
-};
 
-module.exports = wait;
+    core.setOutput('version', version.id)
+    core.setOutput('date', version.date)
+    core.setOutput('text', version.text)
+  }
+  catch (error) {
+    core.setFailed(error.message)
+  }
+}
+
+
+/***/ }),
+
+/***/ 280:
+/***/ ((__unused_webpack_module, exports) => {
+
+exports.parseEntry = entry => {
+  const [title, ...other] = entry
+    .trim()
+    .split('\n')
+
+  const [version, date] = title.substr(0, title.length-1).split(' (')
+
+  let text = other
+    .map(line => line.replace(/^### /, '## '))
+    .join('\n')
+    .trim()
+
+  return { version, date, text }
+}
 
 
 /***/ }),
@@ -461,6 +522,14 @@ module.exports = require("os");;
 
 "use strict";
 module.exports = require("path");;
+
+/***/ }),
+
+/***/ 669:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("util");;
 
 /***/ })
 
