@@ -5,13 +5,14 @@ const core = require('@actions/core')
 const { parseEntry } = require('./parse-entry')
 const { getEntries } = require('./get-entries')
 const { getChangelogForVersion } = require('./get-changelog-for-version')
+const { normalizeVersion } = require('./normalize-version')
 
 const readFile = utils.promisify(fs.readFile)
 
 exports.main = async function main() {
   try {
     const changelogPath = './CHANGELOG.md'
-    const targetVersion = core.getInput('version')
+    const targetVersion = normalizeVersion(core.getInput('version'))
 
     core.startGroup('Parse data')
     const rawData = await readFile(changelogPath)
