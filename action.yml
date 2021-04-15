@@ -1,0 +1,16 @@
+name: 'Statamic Changelog'
+description: 'Reads and parses the Statamic changelog'
+inputs:
+  version:
+    description: 'Version of the log entry wanted'
+    required: true
+outputs:
+  version:
+    description: 'Version of the changelog entry found'
+  date:
+    description: 'Release date of the changelog entry found'
+  text:
+    description: 'Description text of the changelog entry found'
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
