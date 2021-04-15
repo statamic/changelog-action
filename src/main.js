@@ -12,8 +12,13 @@ const readFile = utils.promisify(fs.readFile)
 exports.main = async function main() {
   try {
     const changelogPath = './CHANGELOG.md'
-    const targetVersion = normalizeVersion(core.getInput('version'))
+
+    core.startGroup('Getting version')
+    let targetVersion = core.getInput('version')
     core.debug(`targetVersion: ${targetVersion}`)
+    targetVersion = normalizeVersion(targetVersion);
+    core.debug(`targetVersion: ${targetVersion}`)
+    core.endGroup()
 
     core.startGroup('Parse data')
     const rawData = await readFile(changelogPath)
