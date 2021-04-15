@@ -13,6 +13,7 @@ exports.main = async function main() {
   try {
     const changelogPath = './CHANGELOG.md'
     const targetVersion = normalizeVersion(core.getInput('version'))
+    core.debug(`targetVersion: ${targetVersion}`)
 
     core.startGroup('Parse data')
     const rawData = await readFile(changelogPath)
