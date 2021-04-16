@@ -1,5 +1,7 @@
 exports.normalizeVersion = version => {
-  return version
-    .replace(/^refs\/tags\//, '')
-    .replace(/^v/, '')
+  version = version.replace(/^refs\/tags\//, '');
+
+  if (! version.startsWith('v')) version = 'v'+version;
+
+  return version;
 }

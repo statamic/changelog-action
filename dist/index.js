@@ -6151,9 +6151,11 @@ exports.main = async function main() {
 /***/ ((__unused_webpack_module, exports) => {
 
 exports.normalizeVersion = version => {
-  return version
-    .replace(/^refs\/tags\//, '')
-    .replace(/^v/, '')
+  version = version.replace(/^refs\/tags\//, '');
+
+  if (! version.startsWith('v')) version = 'v'+version;
+
+  return version;
 }
 
 
@@ -6174,7 +6176,7 @@ exports.parseEntry = entry => {
     .join('\n')
     .trim()
 
-  return { version, date, text }
+  return { version: `v${version}`, date, text }
 }
 
 

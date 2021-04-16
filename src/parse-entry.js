@@ -10,5 +10,5 @@ exports.parseEntry = entry => {
     .join('\n')
     .trim()
 
-  return { version, date, text }
+  return { version: `v${version}`, date, text }
 }
