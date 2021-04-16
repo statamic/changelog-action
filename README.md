@@ -41,3 +41,24 @@ jobs:
           release_name: ${{ steps.changelog.outputs.version }}
           body: ${{ steps.changelog.outputs.text }}
 ```
+
+If there is no changelog entry found for the specified version, a blank one will be provided.
+
+## Changelog Format
+
+This action assumes you are using a `CHANGELOG.md` in the project root formatted like [statamic/cms](https://github.com/statamic/cms/blob/3.1/CHANGELOG.md).
+
+- Each release begins with an h2.
+- Each h2 contains the version without a v, and a date in YYYY-MM-DD in brackets:
+  ```md
+  ## 1.2.3 (2020-04-16)
+  ```
+- Any h3s inside the body of each release will be convered to h2s.
+  ```md
+  ### What's new
+  - This
+
+  ### What's fixed
+  - That
+  ```
+- The h1 at the start of the file and any intro text will be ignored.
