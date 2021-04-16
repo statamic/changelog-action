@@ -1,7 +1,9 @@
 exports.parseEntry = entry => {
-  const [title, ...other] = entry
+  let [title, ...other] = entry
     .trim()
     .split('\n')
+
+  if (!title.startsWith('v')) title = `v${title}`
 
   const [version, date] = title.substr(0, title.length-1).split(' (')
 
@@ -10,5 +12,5 @@ exports.parseEntry = entry => {
     .join('\n')
     .trim()
 
-  return { version: `v${version}`, date, text }
+  return { version, date, text }
 }

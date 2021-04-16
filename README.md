@@ -49,9 +49,12 @@ If there is no changelog entry found for the specified version, a blank one will
 This action assumes you are using a `CHANGELOG.md` in the project root formatted like [statamic/cms](https://github.com/statamic/cms/blob/3.1/CHANGELOG.md).
 
 - Each release begins with an h2.
-- Each h2 contains the version without a v, and a date in YYYY-MM-DD in brackets:
+- Each h2 contains the version (with or without a `v` prefix), and a date in YYYY-MM-DD in brackets:
   ```md
   ## 1.2.3 (2020-04-16)
+  ```
+  ```md
+  ## v1.2.3 (2020-04-16)
   ```
 - Any h3s inside the body of each release will be convered to h2s.
   ```md
