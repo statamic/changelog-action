@@ -25,13 +25,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v1
     
-    - name: Get Changelog
+      - name: Get Changelog
         id: changelog
         uses: statamic/changelog-action@v1
         with:
           version: ${{ github.ref }}
-    
-    - name: Create Release
+
+      - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
